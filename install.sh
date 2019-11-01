@@ -41,9 +41,36 @@ function instdpec()
     fi
 }
 
+root_need() {
+    if [[ $EUID -ne 0 ]]; then
+        echo "Error: This script must be run as root!" 1>&2
+        exit 1
+    fi
+}
+
+root_need
+
 UUID=$(cat /proc/sys/kernel/random/uuid)
 v2_domain=""
 api_domain=""
+
+while getopts "a:v:" arg
+do
+    case $arg in
+        a)
+            api_domain=$OPTARG
+            #echo "You set API Domain is $api_domain"
+            ;;
+        v)
+            v2_domain=$OPTARG
+            #echo "You set V2Ray Domain is $v2_domain"
+            ;;
+        ?)  
+            echo "Unkonw argument, skip"
+            exit 1
+        ;;
+    esac
+done
 
 Get_Dist_Name
 echo "Your OS is $DISTRO"
@@ -51,6 +78,10 @@ instdpec $DISTRO
 
 echo "1. Install V2Ray by official shell script"
 bash <(curl -L -s https://install.direct/go.sh)
+if [ $? -ne 0 ]; then
+    echo "Failed to install V2Ray. Please try again later."
+    exit 1
+fi
 
 echo "2. Setting V2Ray to vmess+ws+Caddy"
 #Modify V2Ray Config
@@ -203,3 +234,34 @@ systemctl enable caddy.service
 systemctl start v2ray.service
 systemctl enable caddy.service
 systemctl start caddy.service
+# Disable and stop firewalld
+systemctl disable firewalld
+systemctl stop firewalld
+
+#Finish
+IP=`curl http://members.3322.org/dyndns/getip`
+
+cat <<EOF
+
+Final - Everything is OK!
+
+-----------------------------
+Server Info
+-----------------------------
+IP(Internet): ${IP}
+V2Ray Domain: ${v2_domain}
+API Domain: ${api_domain}
+Port: 443
+Default UUID: ${UUID}
+AlterID: 64
+
+streamSettings:
+    network: ws
+    security: tls
+    wsSettings:
+        path: /misaka_network
+
+-----------------------------
+Enjoy your day!
+EOF
+
