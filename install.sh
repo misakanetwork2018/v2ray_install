@@ -294,6 +294,11 @@ streamSettings:
         path: /misaka_network
 
 -----------------------------
+Usage
+-----------------------------
+start api: systemctl start v2ray-proxy
+stop api:  systemctl stop v2ray-proxy
+-----------------------------
 Enjoy your day!
 EOF
 
