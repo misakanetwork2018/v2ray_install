@@ -53,8 +53,10 @@ root_need
 UUID=$(cat /proc/sys/kernel/random/uuid)
 v2_domain=""
 api_domain=""
+v2ray_proxy_url="https://github.com/misakanetwork2018/v2ray_api/releases/download/v0.1/v2ray_proxy"
+key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 
-while getopts "a:v:" arg
+while getopts "a:v:k:" arg
 do
     case $arg in
         a)
@@ -64,6 +66,10 @@ do
         v)
             v2_domain=$OPTARG
             #echo "You set V2Ray Domain is $v2_domain"
+            ;;
+        k)
+            key=$OPTARG
+            #echo "You set Kye is $key"
             ;;
         ?)  
             echo "Unkonw argument, skip"
@@ -178,6 +184,10 @@ cat > /etc/v2ray/config.json <<EOF
 EOF
 #Install Caddy
 curl https://getcaddy.com | bash -s personal
+if [ $? -ne 0 ]; then
+    echo "Failed to install Caddy. Please try again later."
+    exit 1
+fi
 mkdir /etc/caddy
 touch /etc/caddy/Caddyfile
 chown -R root:www-data /etc/caddy
@@ -201,8 +211,15 @@ EOF
 
 echo "3. Install v2ray_proxy"
 wget -o /usr/bin/v2ray_proxy -c $v2ray_proxy_url
+#Config
+cat > /etc/v2ray/api_config.json <<EOF
+{
+    "key": "${key}",
+    "address": "127.0.0.1:8080"
+}
+EOF
 #Set Caddy Proxy
-cat > /etc/caddy/v2ray <<EOF
+cat > /etc/caddy/v2_api <<EOF
 ${api_domain}
 {
   log /var/log/caddy/api.log
