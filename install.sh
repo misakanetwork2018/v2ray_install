@@ -83,7 +83,7 @@ echo "Your OS is $DISTRO"
 instdpec $DISTRO
 
 echo "1. Install V2Ray by official shell script"
-bash < `curl -L -s https://install.direct/go.sh`
+curl https://install.direct/go.sh | bash -s personal
 if [ $? -ne 0 ]; then
     echo "Failed to install V2Ray. Please try again later."
     exit 1
