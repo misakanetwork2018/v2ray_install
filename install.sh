@@ -53,6 +53,8 @@ root_need
 UUID=$(cat /proc/sys/kernel/random/uuid)
 v2_domain=""
 api_domain=""
+user="www-data"
+group="www-data"
 v2ray_proxy_url="https://github.com/misakanetwork2018/v2ray_api/releases/download/v0.1/v2ray_proxy"
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 
@@ -188,8 +190,7 @@ if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
     exit 1
 fi
-user=www-data
-group=www-data
+
 #create group if not exists
 egrep "^$group" /etc/group >& /dev/null
 if [ $? -ne 0 ]
