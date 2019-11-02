@@ -211,9 +211,21 @@ mkdir /etc/ssl/caddy
 chown -R www-data:root /etc/ssl/caddy
 chmod 0770 /etc/ssl/caddy
 curl -s https://raw.githubusercontent.com/mholt/caddy/master/dist/init/linux-systemd/caddy.service -o /etc/systemd/system/caddy.service
-chown www-data:www-data /var/log/caddy
+mkdir /var/log/caddy
+chown -R www-data:www-data /var/log/caddy
+
+echo "3. Install v2ray_proxy"
+wget --no-check-certificate -O /usr/bin/v2ray_proxy $v2ray_proxy_url
+chmod a+x /usr/bin/v2ray_proxy
+#Config
+cat > /etc/v2ray/api_config.json <<EOF
+{
+    "key": "${key}",
+    "address": "127.0.0.1:8080"
+}
+EOF
 #Set Caddy Proxy
-cat > /etc/caddy/v2ray <<EOF
+cat > /etc/caddy/Caddyfile <<EOF
 ${v2_domain}
 {
   log /var/log/caddy/v2ray.log
@@ -223,19 +235,7 @@ ${v2_domain}
     header_upstream -Origin
   }
 }
-EOF
 
-echo "3. Install v2ray_proxy"
-wget --no-check-certificate -O /usr/bin/v2ray_proxy $v2ray_proxy_url
-#Config
-cat > /etc/v2ray/api_config.json <<EOF
-{
-    "key": "${key}",
-    "address": "127.0.0.1:8080"
-}
-EOF
-#Set Caddy Proxy
-cat > /etc/caddy/v2_api <<EOF
 ${api_domain}
 {
   log /var/log/caddy/api.log
@@ -274,6 +274,25 @@ systemctl stop firewalld
 #Finish
 IP=`curl ifconfig.me`
 
+vmess_json=<<EOF
+{
+"v": "2",
+"ps": "",
+"add": "${v2_domain}",
+"port": "443",
+"id": "${UUID}",
+"aid": "64",
+"net": "ws",
+"type": "none",
+"host": "",
+"path": "/misaka_network",
+"tls": "tls"
+}
+EOF
+vmess_base64=$( base64 <<< $vmess_json)
+
+link="vmess://$vmess_base64"
+
 cat <<EOF
 
 Final - Everything is OK!
@@ -293,6 +312,8 @@ streamSettings:
     security: tls
     wsSettings:
         path: /misaka_network
+        
+vmess link: ${link}
 
 -----------------------------
 Usage

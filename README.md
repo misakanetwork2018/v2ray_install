@@ -22,4 +22,4 @@ apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https
 
 注意两个域名不能重复，否则会导致配置失败
 
-运行完了就会显示服务器信息
+运行完了就会显示服务器信息，记得保存一下UUID，或者复制一下vmess链接
