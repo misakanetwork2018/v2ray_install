@@ -225,7 +225,7 @@ ${v2_domain}
 EOF
 
 echo "3. Install v2ray_proxy"
-wget -o /usr/bin/v2ray_proxy -c $v2ray_proxy_url
+curl -s $v2ray_proxy_url -o /usr/bin/v2ray_proxy
 #Config
 cat > /etc/v2ray/api_config.json <<EOF
 {
