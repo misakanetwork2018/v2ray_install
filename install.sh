@@ -256,7 +256,7 @@ systemctl disable firewalld
 systemctl stop firewalld
 
 #Finish
-IP=`curl http://members.3322.org/dyndns/getip`
+IP=`curl ifconfig.me`
 
 cat <<EOF
 
