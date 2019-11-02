@@ -188,6 +188,21 @@ if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
     exit 1
 fi
+user=www-data
+group=www-data
+#create group if not exists
+egrep "^$group" /etc/group >& /dev/null
+if [ $? -ne 0 ]
+then
+    groupadd $group
+fi
+
+#create user if not exists
+egrep "^$user" /etc/passwd >& /dev/null
+if [ $? -ne 0 ]
+then
+    useradd -g $group $user
+fi
 mkdir /etc/caddy
 touch /etc/caddy/Caddyfile
 chown -R root:www-data /etc/caddy
