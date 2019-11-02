@@ -5,13 +5,13 @@
 Centos
 
 `
-yum install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;sh install.sh -a example.com -v example.net
+yum install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;bash install.sh -a example.com -v example.net
 `
 
 Debian/Ubuntu
 
 `
-apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;sh install.sh -a example.com -v example.net
+apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;bash install.sh -a example.com -v example.net
 `
 
 -k : 接口密钥，不填则由脚本生成
