@@ -274,7 +274,7 @@ systemctl stop firewalld
 #Finish
 IP=`curl ifconfig.me`
 
-vmess_json=<<EOF
+vmess_json=`cat <<EOF
 {
 "v": "2",
 "ps": "",
@@ -288,7 +288,7 @@ vmess_json=<<EOF
 "path": "/misaka_network",
 "tls": "tls"
 }
-EOF
+EOF`
 vmess_base64=$( base64 <<< $vmess_json)
 
 link="vmess://$vmess_base64"
