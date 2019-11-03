@@ -267,9 +267,13 @@ systemctl enable caddy.service
 systemctl start v2ray.service
 systemctl enable caddy.service
 systemctl start caddy.service
+systemctl enable v2ray-proxy.service
+systemctl start v2ray-proxy.service
 # Disable and stop firewalld
+if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
 systemctl disable firewalld
 systemctl stop firewalld
+fi
 
 #Finish
 IP=`curl ifconfig.me`
