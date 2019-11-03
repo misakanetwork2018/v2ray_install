@@ -206,13 +206,13 @@ then
 fi
 mkdir /etc/caddy
 touch /etc/caddy/Caddyfile
-chown -R root:www-data /etc/caddy
+chown -R root:$group /etc/caddy
 mkdir /etc/ssl/caddy
-chown -R www-data:root /etc/ssl/caddy
+chown -R $user:root /etc/ssl/caddy
 chmod 0770 /etc/ssl/caddy
 curl -s https://raw.githubusercontent.com/mholt/caddy/master/dist/init/linux-systemd/caddy.service -o /etc/systemd/system/caddy.service
 mkdir /var/log/caddy
-chown -R www-data:www-data /var/log/caddy
+chown -R $user:$group /var/log/caddy
 
 echo "3. Install v2ray_proxy"
 wget --no-check-certificate -O /usr/bin/v2ray_proxy $v2ray_proxy_url
@@ -302,7 +302,6 @@ Server Info
 -----------------------------
 IP(Internet): ${IP}
 V2Ray Domain: ${v2_domain}
-API Domain: ${api_domain}
 Port: 443
 Default UUID: ${UUID}
 AlterID: 64
@@ -314,6 +313,9 @@ streamSettings:
         path: /misaka_network
         
 vmess link: ${link}
+
+API Domain: ${api_domain}
+API Key:    ${key}
 
 -----------------------------
 Usage
