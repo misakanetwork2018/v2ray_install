@@ -55,7 +55,7 @@ v2_domain=""
 api_domain=""
 user="www-data"
 group="www-data"
-v2ray_proxy_url="https://github.com/misakanetwork2018/v2ray_api/releases/download/v0.1/v2ray_proxy"
+v2ray_proxy_url="https://github.com/misakanetwork2018/v2ray_api/releases/download/v0.1.1/v2ray_proxy"
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 
 while getopts "a:v:k:" arg
