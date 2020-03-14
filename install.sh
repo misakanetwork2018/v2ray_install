@@ -254,7 +254,7 @@ Wants=network.target v2ray.service
 [Service]
 Restart=on-failure
 Type=simple
-PIDFile=/run/v2ray.pid
+PIDFile=/run/v2ray_proxy.pid
 ExecStart=/usr/bin/v2ray_proxy
 
 [Install]
