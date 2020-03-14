@@ -271,6 +271,8 @@ systemctl enable v2ray-proxy.service
 systemctl start v2ray-proxy.service
 # Disable and stop firewalld
 if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
+service iptables stop
+chkconfig iptables off
 systemctl disable firewalld
 systemctl stop firewalld
 fi
