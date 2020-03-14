@@ -263,7 +263,7 @@ EOF
 
 echo "4. Run and test"
 systemctl daemon-reload
-systemctl enable caddy.service
+systemctl enable v2ray.service
 systemctl start v2ray.service
 systemctl enable caddy.service
 systemctl start caddy.service
