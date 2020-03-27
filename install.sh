@@ -184,7 +184,7 @@ cat > /etc/v2ray/config.json <<EOF
     }
 }
 EOF
-#Install Caddy
+#Install Caddy v1
 curl https://getcaddy.com | bash -s personal
 if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
@@ -210,7 +210,7 @@ chown -R root:$group /etc/caddy
 mkdir /etc/ssl/caddy
 chown -R $user:root /etc/ssl/caddy
 chmod 0770 /etc/ssl/caddy
-curl -s https://raw.githubusercontent.com/mholt/caddy/master/dist/init/linux-systemd/caddy.service -o /etc/systemd/system/caddy.service
+curl -s https://raw.githubusercontent.com/mholt/caddy/v1/dist/init/linux-systemd/caddy.service -o /etc/systemd/system/caddy.service
 mkdir /var/log/caddy
 chown -R $user:$group /var/log/caddy
 
