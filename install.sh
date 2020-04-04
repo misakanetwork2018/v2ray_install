@@ -204,6 +204,8 @@ if [ $? -ne 0 ]
 then
     useradd -g $group $user
 fi
+chsh $user -s /sbin/nologin
+
 mkdir /etc/caddy
 touch /etc/caddy/Caddyfile
 chown -R root:$group /etc/caddy
