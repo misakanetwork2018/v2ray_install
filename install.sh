@@ -57,8 +57,9 @@ user="www-data"
 group="www-data"
 v2ray_proxy_url="https://github.com/misakanetwork2018/v2ray_api/releases/download/v0.1.2/v2ray_proxy"
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
+run=false
 
-while getopts "a:v:k:" arg
+while getopts "a:v:k:r" arg
 do
     case $arg in
         a)
@@ -71,7 +72,10 @@ do
             ;;
         k)
             key=$OPTARG
-            #echo "You set Kye is $key"
+            #echo "You set Key is $key"
+            ;;
+        r)
+            run=true
             ;;
         ?)  
             echo "Unkonw argument, skip"
@@ -266,11 +270,17 @@ EOF
 echo "4. Run and test"
 systemctl daemon-reload
 systemctl enable v2ray.service
-systemctl start v2ray.service
 systemctl enable caddy.service
-systemctl start caddy.service
 systemctl enable v2ray-proxy.service
+
+# If run
+if [ $run ]
+then
+systemctl start v2ray.service
 systemctl start v2ray-proxy.service
+systemctl start caddy.service
+fi
+
 # Disable and stop firewalld
 if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
 service iptables stop

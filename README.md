@@ -20,9 +20,11 @@ apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https
 
 -v : V2Ray的域名，请提前解析到服务器
 
+-r : 安装完成后运行程序
+
 注意两个域名不能重复，否则会导致配置失败
 
-运行完了就会显示服务器信息，记得保存一下UUID，或者复制一下vmess链接
+安装完了就会显示服务器信息，记得保存一下UUID，或者复制一下vmess链接，如果是自动生成Key也要记得复制一下哦
 
 升级命令：
 `
