@@ -31,8 +31,19 @@ function Get_Dist_Name()
 function instdpec()
 {
     if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
+        SYSTEM_VER=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
+        # 兼容centos8
+        if [ $systemver -ge 8 ]; then
+            dnf -y install 'dnf-command(copr)'
+            dnf -y copr enable @caddy/caddy
+        else 
+            yum -y install yum-plugin-copr
+            yum -y copr enable @caddy/caddy
+        fi
         $PM -y install wget curl jq
     elif [ "$1" == "Debian" ] || [ "$1" == "Raspbian" ] || [ "$1" == "Ubuntu" ];then
+        echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
+            | sudo tee -a /etc/apt/sources.list.d/caddy-fury.list
         $PM update
         $PM -y install wget curl jq
     else
@@ -53,8 +64,6 @@ root_need
 UUID=$(cat /proc/sys/kernel/random/uuid)
 v2_domain=""
 api_domain=""
-user="www-data"
-group="www-data"
 v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray_api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 run=false
@@ -189,36 +198,11 @@ cat > /etc/v2ray/config.json <<EOF
 }
 EOF
 #Install Caddy v1
-curl https://getcaddy.com | bash -s personal
+$PM -y install caddy
 if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
     exit 1
 fi
-
-#create group if not exists
-egrep "^$group" /etc/group >& /dev/null
-if [ $? -ne 0 ]
-then
-    groupadd $group
-fi
-
-#create user if not exists
-egrep "^$user" /etc/passwd >& /dev/null
-if [ $? -ne 0 ]
-then
-    useradd -g $group $user
-fi
-chsh $user -s /sbin/nologin
-
-mkdir /etc/caddy
-touch /etc/caddy/Caddyfile
-chown -R root:$group /etc/caddy
-mkdir /etc/ssl/caddy
-chown -R $user:root /etc/ssl/caddy
-chmod 0770 /etc/ssl/caddy
-curl -s https://raw.githubusercontent.com/mholt/caddy/v1/dist/init/linux-systemd/caddy.service -o /etc/systemd/system/caddy.service
-mkdir /var/log/caddy
-chown -R $user:$group /var/log/caddy
 
 echo "3. Install v2ray_proxy"
 wget --no-check-certificate -O /usr/bin/v2ray_proxy $v2ray_proxy_url
@@ -308,7 +292,7 @@ vmess_json=`cat <<EOF
 "tls": "tls"
 }
 EOF`
-vmess_base64=$( base64 <<< $vmess_json)
+vmess_base64=$( base64 -w 0 <<< $vmess_json)
 
 link="vmess://$vmess_base64"
 
