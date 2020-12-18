@@ -33,7 +33,7 @@ function instdpec()
     if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
         SYSTEM_VER=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
         # 兼容centos8
-        if [ $systemver -ge 8 ]; then
+        if [[ $SYSTEM_VER -ge 8 ]]; then
             dnf -y install 'dnf-command(copr)'
             dnf -y copr enable @caddy/caddy
         else 
@@ -60,6 +60,10 @@ root_need() {
 }
 
 root_need
+
+Get_Dist_Name
+echo "Your OS is $DISTRO"
+instdpec $DISTRO
 
 UUID=$(cat /proc/sys/kernel/random/uuid)
 v2_domain=""
@@ -93,10 +97,6 @@ do
     esac
 done
 
-Get_Dist_Name
-echo "Your OS is $DISTRO"
-instdpec $DISTRO
-
 echo "1. Install V2Ray by official shell script"
 bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
 if [ $? -ne 0 ]; then
@@ -105,6 +105,11 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "2. Setting V2Ray to vmess+ws+Caddy"
+#Need create dir
+mkdir /etc/v2ray
+#Modify V2Ray Service
+sed -i 's#/usr/local/etc/v2ray/config.json#/etc/v2ray/config.json#' /etc/systemd/system/v2ray.service
+sed -i 's#/usr/local/etc/v2ray/config.json#/etc/v2ray/config.json#' /etc/systemd/system/v2ray.service.d/10-donot_touch_single_conf.conf
 #Modify V2Ray Config
 cat > /etc/v2ray/config.json <<EOF
 {
@@ -218,21 +223,18 @@ EOF
 cat > /etc/caddy/Caddyfile <<EOF
 ${v2_domain}
 {
-  log /var/log/caddy/v2ray.log
   tls moqiaoduo@gmail.com
-  proxy /misaka_network localhost:10000 {
-    websocket
-    header_upstream -Origin
+  @websockets {
+    header Connection Upgrade
+    header Upgrade websocket
   }
+  reverse_proxy @websockets localhost:10000
 }
 
 ${api_domain}
 {
-  log /var/log/caddy/api.log
   tls moqiaoduo@gmail.com
-  proxy / localhost:8080 {
-    header_upstream -Origin
-  }
+  reverse_proxy localhost:8080
 }
 EOF
 cat > /etc/systemd/system/v2ray-proxy.service <<EOF
@@ -242,7 +244,7 @@ After=network.target v2ray.service
 Wants=network.target v2ray.service
 
 [Service]
-Environment='export GIN_MODE=release'
+Environment='GIN_MODE=release'
 Restart=on-failure
 Type=simple
 PIDFile=/run/v2ray_proxy.pid
