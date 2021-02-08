@@ -66,22 +66,17 @@ echo "Your OS is $DISTRO"
 instdpec $DISTRO
 
 UUID=$(cat /proc/sys/kernel/random/uuid)
-v2_domain=""
-api_domain=""
+domain=""
 v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray_api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 run=false
 
-while getopts "a:v:k:r" arg
+while getopts "d:k:r" arg
 do
     case $arg in
-        a)
-            api_domain=$OPTARG
-            #echo "You set API Domain is $api_domain"
-            ;;
-        v)
-            v2_domain=$OPTARG
-            #echo "You set V2Ray Domain is $v2_domain"
+        d)
+            domain=$OPTARG
+            #echo "You set Domain is $domain"
             ;;
         k)
             key=$OPTARG
@@ -202,7 +197,7 @@ cat > /etc/v2ray/config.json <<EOF
     }
 }
 EOF
-#Install Caddy v1
+#Install Caddy v2
 $PM -y install caddy
 if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
@@ -221,21 +216,26 @@ cat > /etc/v2ray/api_config.json <<EOF
 EOF
 #Set Caddy Proxy
 cat > /etc/caddy/Caddyfile <<EOF
-${v2_domain}
+${domain}
 {
   tls moqiaoduo@gmail.com
   @websockets {
     header Connection Upgrade
     header Upgrade websocket
   }
-  reverse_proxy @websockets localhost:10000
+  handle /misaka_network* {
+    reverse_proxy @websockets localhost:10000
+  }
+  handle_path * {
+    reverse_proxy localhost:8080
+  }
+  handle {
+    respond "Access denied" 403 {
+      close
+    }
+  }
 }
 
-${api_domain}
-{
-  tls moqiaoduo@gmail.com
-  reverse_proxy localhost:8080
-}
 EOF
 cat > /etc/systemd/system/v2ray-proxy.service <<EOF
 [Unit]
@@ -283,7 +283,7 @@ vmess_json=`cat <<EOF
 {
 "v": "2",
 "ps": "",
-"add": "${v2_domain}",
+"add": "${domain}",
 "port": "443",
 "id": "${UUID}",
 "aid": "64",
@@ -306,7 +306,7 @@ Final - Everything is OK!
 Server Info
 -----------------------------
 IP(Internet): ${IP}
-V2Ray Domain: ${v2_domain}
+V2Ray Domain: ${domain}
 Port: 443
 Default UUID: ${UUID}
 AlterID: 64
@@ -319,7 +319,7 @@ streamSettings:
         
 vmess link: ${link}
 
-API Domain: ${api_domain}
+API Domain: ${domain}
 API Key:    ${key}
 
 -----------------------------
