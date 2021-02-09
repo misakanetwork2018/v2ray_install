@@ -226,7 +226,7 @@ ${domain}
   handle /misaka_network* {
     reverse_proxy @websockets localhost:10000
   }
-  handle_path * {
+  handle_path /api/* {
     reverse_proxy localhost:8080
   }
   handle {
