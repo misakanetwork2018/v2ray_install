@@ -43,7 +43,7 @@ function instdpec()
         $PM -y install wget curl jq
     elif [ "$1" == "Debian" ] || [ "$1" == "Raspbian" ] || [ "$1" == "Ubuntu" ];then
         echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
-            | sudo tee -a /etc/apt/sources.list.d/caddy-fury.list
+            | tee -a /etc/apt/sources.list.d/caddy-fury.list
         $PM update
         $PM -y install wget curl jq
     else
@@ -67,7 +67,7 @@ instdpec $DISTRO
 
 UUID=$(cat /proc/sys/kernel/random/uuid)
 domain=""
-v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray_api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
+v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray-api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 run=false
 email="misakanetwork2018@gmail.com"
