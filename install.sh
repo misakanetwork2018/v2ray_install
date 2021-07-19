@@ -70,8 +70,9 @@ domain=""
 v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray_api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 run=false
+email="misakanetwork2018@gmail.com"
 
-while getopts "d:k:r" arg
+while getopts "d:k:e:r" arg
 do
     case $arg in
         d)
@@ -81,6 +82,9 @@ do
         k)
             key=$OPTARG
             #echo "You set Key is $key"
+            ;;
+        e)
+            email=$OPTARG
             ;;
         r)
             run=true
@@ -218,7 +222,7 @@ EOF
 cat > /etc/caddy/Caddyfile <<EOF
 ${domain}
 {
-  tls moqiaoduo@gmail.com
+  tls ${email}
   @websockets {
     header Connection Upgrade
     header Upgrade websocket
