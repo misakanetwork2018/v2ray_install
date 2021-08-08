@@ -68,6 +68,10 @@ instdpec $DISTRO
 UUID=$(cat /proc/sys/kernel/random/uuid)
 domain=""
 v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray-api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
+if [ ! -n "$v2ray_proxy_url" ]; then
+echo "Get V2ray Api Download URL Failed. Please try again."
+exit;
+fi
 key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
 run=false
 email="misakanetwork2018@gmail.com"
