@@ -273,7 +273,7 @@ if [ $run ]
 then
 systemctl start v2ray.service
 systemctl start v2ray-proxy.service
-systemctl start caddy.service
+systemctl restart caddy.service
 fi
 
 # Disable and stop firewalld
@@ -294,7 +294,7 @@ vmess_json=`cat <<EOF
 "add": "${domain}",
 "port": "443",
 "id": "${UUID}",
-"aid": "64",
+"aid": "0",
 "net": "ws",
 "type": "none",
 "host": "",
@@ -317,7 +317,7 @@ IP(Internet): ${IP}
 V2Ray Domain: ${domain}
 Port: 443
 Default UUID: ${UUID}
-AlterID: 64
+AlterID: 0
 
 streamSettings:
     network: ws
