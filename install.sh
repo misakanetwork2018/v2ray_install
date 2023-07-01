@@ -282,7 +282,7 @@ fi
 systemctl enable v2ray-proxy.service
 
 # If run
-if [ $run ]
+if [ "$run" == "true" ]
 then
 systemctl start v2ray.service
 systemctl start v2ray-proxy.service
