@@ -7,7 +7,7 @@ run=false
 email="misakanetwork2018@gmail.com"
 installcaddy=false
 
-while getopts "d:k:e:r" arg
+while getopts "d:k:e:rc" arg
 do
     case $arg in
         d)
