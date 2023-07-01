@@ -1,5 +1,39 @@
 #!/bin/sh
 
+UUID=$(cat /proc/sys/kernel/random/uuid)
+domain=""
+key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
+run=false
+email="misakanetwork2018@gmail.com"
+installcaddy=false
+
+while getopts "d:k:e:r" arg
+do
+    case $arg in
+        d)
+            domain=$OPTARG
+            #echo "You set Domain is $domain"
+            ;;
+        k)
+            key=$OPTARG
+            #echo "You set Key is $key"
+            ;;
+        e)
+            email=$OPTARG
+            ;;
+        c)
+            installcaddy=true
+            ;;
+        r)
+            run=true
+            ;;
+        ?)  
+            echo "Unkonw argument, skip"
+            exit 1
+        ;;
+    esac
+done
+
 function Get_Dist_Name()
 {
     if grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
@@ -31,6 +65,7 @@ function Get_Dist_Name()
 function instdpec()
 {
     if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
+        if [ $installcaddy ]; then
         SYSTEM_VER=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
         # 兼容centos8
         if [[ $SYSTEM_VER -ge 8 ]]; then
@@ -40,10 +75,13 @@ function instdpec()
             yum -y install yum-plugin-copr
             yum -y copr enable @caddy/caddy
         fi
+        fi
         $PM -y install wget curl jq
     elif [ "$1" == "Debian" ] || [ "$1" == "Raspbian" ] || [ "$1" == "Ubuntu" ];then
+        if [ $installcaddy ]; then
         echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
             | tee -a /etc/apt/sources.list.d/caddy-fury.list
+        fi
         $PM update
         $PM -y install wget curl jq
     else
@@ -65,40 +103,11 @@ Get_Dist_Name
 echo "Your OS is $DISTRO"
 instdpec $DISTRO
 
-UUID=$(cat /proc/sys/kernel/random/uuid)
-domain=""
 v2ray_proxy_url=`curl -s https://api.github.com/repos/misakanetwork2018/v2ray-api/releases/latest | jq -r ".assets[] | select(.name) | .browser_download_url"`
 if [ ! -n "$v2ray_proxy_url" ]; then
 echo "Get V2ray Api Download URL Failed. Please try again."
 exit;
 fi
-key=`head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 32`
-run=false
-email="misakanetwork2018@gmail.com"
-
-while getopts "d:k:e:r" arg
-do
-    case $arg in
-        d)
-            domain=$OPTARG
-            #echo "You set Domain is $domain"
-            ;;
-        k)
-            key=$OPTARG
-            #echo "You set Key is $key"
-            ;;
-        e)
-            email=$OPTARG
-            ;;
-        r)
-            run=true
-            ;;
-        ?)  
-            echo "Unkonw argument, skip"
-            exit 1
-        ;;
-    esac
-done
 
 echo "1. Install V2Ray by official shell script"
 bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
@@ -205,11 +214,13 @@ cat > /etc/v2ray/config.json <<EOF
     }
 }
 EOF
+if [ $installcaddy ]; then
 #Install Caddy v2
 $PM -y install caddy
 if [ $? -ne 0 ]; then
     echo "Failed to install Caddy. Please try again later."
     exit 1
+fi
 fi
 
 echo "3. Install v2ray_proxy"
@@ -265,7 +276,9 @@ EOF
 echo "4. Run and test"
 systemctl daemon-reload
 systemctl enable v2ray.service
+if [ $installcaddy ]; then
 systemctl enable caddy.service
+fi
 systemctl enable v2ray-proxy.service
 
 # If run
@@ -273,7 +286,9 @@ if [ $run ]
 then
 systemctl start v2ray.service
 systemctl start v2ray-proxy.service
+if [ $installcaddy ]; then
 systemctl restart caddy.service
+fi
 fi
 
 # Disable and stop firewalld
@@ -327,8 +342,8 @@ streamSettings:
         
 vmess link: ${link}
 
-API Domain: ${domain}
-API Key:    ${key}
+API URL: https://${domain}/api
+API Key: ${key}
 
 -----------------------------
 Usage

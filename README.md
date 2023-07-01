@@ -22,6 +22,10 @@ apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https
 
 -r : 安装完成后运行程序
 
+-e : 申请tls时使用的email地址
+
+-c : 安装caddy
+
 安装完了就会显示服务器信息，记得保存一下UUID，或者复制一下vmess链接，如果是自动生成Key也要记得复制一下哦
 
 升级命令：
