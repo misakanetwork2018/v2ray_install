@@ -65,7 +65,7 @@ function Get_Dist_Name()
 function instdpec()
 {
     if [ "$1" == "CentOS" ] || [ "$1" == "CentOS7" ];then
-        if [ $installcaddy ]; then
+        if [ "$installcaddy" == "true" ]; then
         SYSTEM_VER=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
         # 兼容centos8
         if [[ $SYSTEM_VER -ge 8 ]]; then
@@ -78,7 +78,7 @@ function instdpec()
         fi
         $PM -y install wget curl jq
     elif [ "$1" == "Debian" ] || [ "$1" == "Raspbian" ] || [ "$1" == "Ubuntu" ];then
-        if [ $installcaddy ]; then
+        if [ "$installcaddy" == "true" ]; then
         echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
             | tee -a /etc/apt/sources.list.d/caddy-fury.list
         fi
@@ -214,7 +214,7 @@ cat > /etc/v2ray/config.json <<EOF
     }
 }
 EOF
-if [ $installcaddy ]; then
+if [ "$installcaddy" == "true" ]; then
 #Install Caddy v2
 $PM -y install caddy
 if [ $? -ne 0 ]; then
@@ -276,7 +276,7 @@ EOF
 echo "4. Run and test"
 systemctl daemon-reload
 systemctl enable v2ray.service
-if [ $installcaddy ]; then
+if [ "$installcaddy" == "true" ]; then
 systemctl enable caddy.service
 fi
 systemctl enable v2ray-proxy.service
@@ -286,7 +286,7 @@ if [ $run ]
 then
 systemctl start v2ray.service
 systemctl start v2ray-proxy.service
-if [ $installcaddy ]; then
+if [ "$installcaddy" == "true" ]; then
 systemctl restart caddy.service
 fi
 fi
