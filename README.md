@@ -13,7 +13,7 @@ yum install wget -y;wget --no-check-certificate -O ./install.sh https://raw.gith
 Debian/Ubuntu
 
 `
-apt udpate;apt install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;bash install.sh -d example.com
+apt update;apt install wget -y;wget --no-check-certificate -O ./install.sh https://raw.githubusercontent.com/misakanetwork2018/v2ray_install/master/install.sh;bash install.sh -d example.com
 `
 
 -k : 接口密钥，不填则由脚本生成
